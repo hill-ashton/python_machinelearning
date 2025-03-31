@@ -74,3 +74,24 @@ print("Mean squared error: %.2f" % mean_squared_error(y_test_, y_test))
 print("Root mean squared error: %.2f" % root_mean_squared_error(y_test_, y_test))
 print("R2-score: %.2f" % r2_score( y_test_, y_test) )
 
+#Exercises
+#Plot the regression model result over the test data instead of the training data. Visually evaluate whether the result is good
+plt.scatter(X_test, y_test,  color='blue')
+plt.plot(X_test, regressor.coef_ * X_test + regressor.intercept_, '-r')
+plt.xlabel("Engine size")
+plt.ylabel("Emission")
+
+#Select the fuel consumption feature from the dataframe and split the data 80%/20% into training and testing sets.
+X = cdf.FUELCONSUMPTION_COMB.to_numpy()
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+#Train a linear regression model using the training data you created.
+regr = linear_model.LinearRegression()
+regr.fit(X_train.reshape(-1, 1), y_train)
+
+#Use the model to make test predictions on the fuel consumption testing data.
+y_test_ = regr.predict(X_test.reshape(-1, 1))
+
+#Calculate and print the Mean Squared Error of the test predictions.
+print("Mean squared error: %.2f" % mean_squared_error(y_test_, y_test))
+
