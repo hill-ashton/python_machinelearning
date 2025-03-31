@@ -1,3 +1,5 @@
+#This is a lnear regression analysis lab done in an online web app IDE, 
+#For the purposes of archiving documentation, I have rewritten code used to complete tasks associated with the lab, as well as general usage of the methods introduced in the lab
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
