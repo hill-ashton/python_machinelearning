@@ -31,4 +31,38 @@ print(data.isnull().sum())
 print(data.info())
 print(data.describe())
 
-#Exercise 2 -
+#feature scaling
+#standardizing continuous numerical features
+continuous_columns = data.select_dtypes(include=['float64']).columns.tolist()
+
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(data[continuous_columns])
+
+#converting to a DataFrame
+scaled_df = pd.DataFrame(scaled_features, columns=scaler.get_feature_names_out(continuous_columns))
+
+#combining with the original dataset
+scaled_data = pd.concat([data.drop(columns=continuous_columns), scaled_df], axis=1)
+
+#convert categorical variables into numerical format using one-hot encoding.
+#identifying categorical columns
+categorical_columns = scaled_data.select_dtypes(include=['object']).columns.tolist()
+categorical_columns.remove('NObeyesdad')  # Exclude target column
+
+#applying one-hot encoding
+encoder = OneHotEncoder(sparse_output=False, drop='first')
+encoded_features = encoder.fit_transform(scaled_data[categorical_columns])
+
+#converting to a DataFrame
+encoded_df = pd.DataFrame(encoded_features, columns=encoder.get_feature_names_out(categorical_columns))
+
+#combining with the original dataset
+prepped_data = pd.concat([scaled_data.drop(columns=categorical_columns), encoded_df], axis=1)
+
+#encoding the target variable
+prepped_data['NObeyesdad'] = prepped_data['NObeyesdad'].astype('category').cat.codes
+prepped_data.head()
+
+#preparing final dataset
+X = prepped_data.drop('NObeyesdad', axis=1)
+y = prepped_data['NObeyesdad']
