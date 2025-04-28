@@ -66,3 +66,29 @@ prepped_data.head()
 #preparing final dataset
 X = prepped_data.drop('NObeyesdad', axis=1)
 y = prepped_data['NObeyesdad']
+
+#splitting data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+#training logistic regression model using one-vs-all (default)
+model_ova = LogisticRegression(multi_class='ovr', max_iter=1000)
+model_ova.fit(X_train, y_train)
+
+#predictions
+y_pred_ova = model_ova.predict(X_test)
+
+#evaluation metrics for OvA
+print("One-vs-All (OvA) Strategy")
+print(f"Accuracy: {np.round(100*accuracy_score(y_test, y_pred_ova),2)}%")
+
+#training logistic regression model using one-vs-one
+model_ovo = OneVsOneClassifier(LogisticRegression(max_iter=1000))
+model_ovo.fit(X_train, y_train)
+
+#predictions
+y_pred_ovo = model_ovo.predict(X_test)
+
+#evaluation metrics for OvO
+print("One-vs-One (OvO) Strategy")
+print(f"Accuracy: {np.round(100*accuracy_score(y_test, y_pred_ovo),2)}%")
+
