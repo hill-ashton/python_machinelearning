@@ -78,3 +78,24 @@ cust_df.info()
 X = cust_df.values[:,1:] # leaves out `Customer ID`
 Clus_dataSet = StandardScaler().fit_transform(X)
 
+#Insights
+cust_df["Clus_km"] = labels
+cust_df.groupby('Clus_km').mean()
+
+area = np.pi * ( X[:, 1])**2  
+plt.scatter(X[:, 0], X[:, 3], s=area, c=labels.astype(float), cmap='tab10', ec='k',alpha=0.5)
+plt.xlabel('Age', fontsize=18)
+plt.ylabel('Income', fontsize=16)
+plt.show()
+
+#create interactive 3D scatter plot
+fig = px.scatter_3d(X, x=1, y=0, z=3, opacity=0.7, color=labels.astype(float))
+
+fig.update_traces(marker=dict(size=5, line=dict(width=.25)), showlegend=False)
+fig.update_layout(coloraxis_showscale=False, width=1000, height=800, scene=dict(
+        xaxis=dict(title='Education'),
+        yaxis=dict(title='Age'),
+        zaxis=dict(title='Income')
+    ))  # Remove color bar, resize plot
+
+fig.show()
