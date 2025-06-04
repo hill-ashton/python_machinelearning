@@ -42,3 +42,43 @@ print("Original Data (First 5 rows):")
 df.head()
 print("\nNoisy Data (First 5 rows):")
 df_noisy.head()
+
+#visualizing the noise content.
+#histograms
+plt.figure(figsize=(12, 6))
+
+#original Feature Distribution (Noise-Free)
+plt.subplot(1, 2, 1)
+plt.hist(df[feature_names[5]], bins=20, alpha=0.7, color='blue', label='Original')
+plt.title('Original Feature Distribution')
+plt.xlabel(feature_names[5])
+plt.ylabel('Frequency')
+
+#noisy Feature Distribution
+plt.subplot(1, 2, 2)
+plt.hist(df_noisy[feature_names[5]], bins=20, alpha=0.7, color='red', label='Noisy') 
+plt.title('Noisy Feature Distribution')
+plt.xlabel(feature_names[5])  
+plt.ylabel('Frequency')
+
+plt.tight_layout()  #ensures proper spacing between subplots
+plt.show()
+
+#plots
+plt.figure(figsize=(12, 6))
+plt.plot(df[feature_names[5]], label='Original',lw=3)
+plt.plot(df_noisy[feature_names[5]], '--',label='Noisy',)
+plt.title('Scaled feature comparison with and without noise')
+plt.xlabel(feature_names[5])
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+#scatterplot
+plt.figure(figsize=(12, 6))
+plt.scatter(df[feature_names[5]], df_noisy[feature_names[5]],lw=5)
+plt.title('Scaled feature comparison with and without noise')
+plt.xlabel('Original Feature')
+plt.ylabel('Noisy Feature')
+plt.tight_layout()
+plt.show()
