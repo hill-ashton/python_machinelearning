@@ -28,3 +28,32 @@ cluster_std=[1,1,2,3.5]
 
 #make the blobs and return the data and the blob labels
 X, labels_ = make_blobs(n_samples=500, centers=centers, n_features=3, cluster_std=cluster_std, random_state=42)
+
+#display the data in an interactive Plotly 3D scatter plot
+#create a DataFrame for Plotly
+df = pd.DataFrame(X, columns=['X', 'Y', 'Z'])
+
+#create interactive 3D scatter plot
+fig = px.scatter_3d(df, x='X', y='Y', z='Z', color=labels_.astype(str) ,  opacity=0.7,  color_discrete_sequence=px.colors.qualitative.G10, title="3D Scatter Plot of Four Blobs")
+
+fig.update_traces(marker=dict(size=5, line=dict(width=1, color='black')), showlegend=False)
+fig.update_layout(coloraxis_showscale=False, width=1000, height=800)  # Remove color bar, resize plot
+
+fig.show()
+
+#standardize the data 
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+#apply t-SNE to reduce the dimensionality to 2D
+tsne = TSNE(n_components=2, random_state=42, perplexity=30, max_iter=1000)
+X_tsne = tsne.fit_transform(X_scaled)
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(111)
+ax.scatter(X_tsne[:, 0], X_tsne[:, 1], c=labels_, cmap='viridis', s=50, alpha=0.7, edgecolor='k')
+ax.set_title("2D t-SNE Projection of 3D Data")
+ax.set_xlabel("t-SNE Component 1")
+ax.set_ylabel("t-SNE Component 2")
+ax.set_xticks([])
+ax.set_yticks([])
+plt.show()
