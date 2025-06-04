@@ -82,3 +82,80 @@ plt.xlabel('Original Feature')
 plt.ylabel('Noisy Feature')
 plt.tight_layout()
 plt.show()
+
+#split the data set into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X_noisy, y, test_size=0.3, random_state=42)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+#initialize the models
+knn = KNeighborsClassifier(n_neighbors=5)
+svm = SVC(kernel='linear', C=1, random_state=42)
+
+#fit the models to the training data
+knn.fit(X_train, y_train)
+svm.fit(X_train, y_train)
+
+#predict on the test set
+y_pred_knn = knn.predict(X_test)
+y_pred_svm = svm.predict(X_test)
+
+#print the accuracy scores and classification reports for both models
+print(f"KNN Testing Accuracy: {accuracy_score(y_test, y_pred_knn):.3f}")
+print(f"SVM Testing Accuracy: {accuracy_score(y_test, y_pred_svm):.3f}")
+
+print("\nKNN Testing Data Classification Report:")
+print(classification_report(y_test, y_pred_knn))
+
+print("\nSVM Testing Data Classification Report:")
+print(classification_report(y_test, y_pred_svm))
+
+#plot the confusion matrices
+conf_matrix_knn = confusion_matrix(y_test, y_pred_knn)
+conf_matrix_svm = confusion_matrix(y_test, y_pred_svm)
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+sns.heatmap(conf_matrix_knn, annot=True, cmap='Blues', fmt='d', ax=axes[0],
+            xticklabels=labels, yticklabels=labels)
+
+axes[0].set_title('KNN Testing Confusion Matrix')
+axes[0].set_xlabel('Predicted')
+axes[0].set_ylabel('Actual')
+
+sns.heatmap(conf_matrix_svm, annot=True, cmap='Blues', fmt='d', ax=axes[1],
+            xticklabels=labels, yticklabels=labels)
+axes[1].set_title('SVM Testing Confusion Matrix')
+axes[1].set_xlabel('Predicted')
+axes[1].set_ylabel('Actual')
+
+plt.tight_layout()
+plt.show()
+y_pred_train_knn = knn.predict(X_train)
+y_pred_train_svm = svm.predict(X_train)
+#evaluate the models on the training data
+print(f"KNN Training Accuracy: {accuracy_score(y_train, y_pred_train_knn):.3f}")
+print(f"SVM Training Accuracy: {accuracy_score(y_train, y_pred_train_svm):.3f}")
+
+print("\nKNN Training Classification Report:")
+print(classification_report(y_train, y_pred_train_knn))
+
+print("\nSVM Training Classification Report:")
+print(classification_report(y_train, y_pred_train_svm))
+
+#plot the confusion matrices
+conf_matrix_knn = confusion_matrix(y_train, y_pred_train_knn)
+conf_matrix_svm = confusion_matrix(y_train, y_pred_train_svm)
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+sns.heatmap(conf_matrix_knn, annot=True, cmap='Blues', fmt='d', ax=axes[0],
+            xticklabels=labels, yticklabels=labels)
+
+axes[0].set_title('KNN Training Confusion Matrix')
+axes[0].set_xlabel('Predicted')
+axes[0].set_ylabel('Actual')
+
+sns.heatmap(conf_matrix_svm, annot=True, cmap='Blues', fmt='d', ax=axes[1],
+            xticklabels=labels, yticklabels=labels)
+axes[1].set_title('SVM Training Confusion Matrix')
+axes[1].set_xlabel('Predicted')
+axes[1].set_ylabel('Actual')
+
+plt.tight_layout()
+plt.show()
