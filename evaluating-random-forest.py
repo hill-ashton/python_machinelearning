@@ -21,3 +21,25 @@ eda = pd.DataFrame(data=X_train)
 eda.columns = data.feature_names
 eda['MedHouseVal'] = y_train
 eda.describe()
+
+#plot the distribution
+plt.hist(1e5*y_train, bins=30, color='lightblue', edgecolor='black')
+plt.title(f'Median House Value Distribution\nSkewness: {skew(y_train):.2f}')
+plt.xlabel('Median House Value')
+plt.ylabel('Frequency')
+
+#initialize and fit the Random Forest Regressor
+rf_regressor = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_regressor.fit(X_train, y_train)
+
+#predict on test set
+y_pred_test = rf_regressor.predict(X_test)
+
+mae = mean_absolute_error(y_test, y_pred_test)
+mse = mean_squared_error(y_test, y_pred_test)
+rmse = root_mean_squared_error(y_test, y_pred_test)
+r2 = r2_score(y_test, y_pred_test)
+print(f"Mean Absolute Error (MAE): {mae:.4f}")
+print(f"Mean Squared Error (MSE): {mse:.4f}")
+print(f"Root Mean Squared Error (RMSE): {rmse:.4f}")
+print(f"R² Score: {r2:.4f}")
