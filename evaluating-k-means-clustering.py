@@ -218,3 +218,55 @@ for i, k in enumerate([2, 3, 4]):
 
 plt.tight_layout()  #adjust spacing between plots
 plt.show()
+
+#generate synthetic classification data
+X, y_true = make_classification(n_samples=300, n_features=2, n_informative=2, n_redundant=0,
+                                n_clusters_per_class=1, n_classes=3, random_state=42)
+
+#apply kmeans clustering
+kmeans = KMeans(n_clusters=3, random_state=42)
+y_kmeans = kmeans.fit_predict(X)
+centroids = kmeans.cluster_centers_
+
+#compute the voronoi diagram
+vor = Voronoi(centroids)
+
+#create a 2x2 grid of subplots
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+#get consistent axis limits for all scatter plots
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+
+#plot the true labels with voronoi regions
+colormap = cm.tab10
+colors_true = colormap(y_true.astype(float) / 3)
+axes[0, 0].scatter(X[:, 0], X[:, 1], c=colors_true, s=50, alpha=0.5, ec='k')
+voronoi_plot_2d(vor, ax=axes[0, 0], show_vertices=False, line_colors='red', line_width=2, line_alpha=0.6, point_size=2)
+axes[0, 0].set_title('Labelled Classification Data with Voronoi Regions')
+axes[0, 0].set_xlabel('Feature 1')
+axes[0, 0].set_ylabel('Feature 2')
+axes[0, 0].set_xlim(x_min, x_max)
+axes[0, 0].set_ylim(y_min, y_max)
+
+#call evaluate_clustering for true labels
+evaluate_clustering(X, y_true, n_clusters=3, ax=axes[1, 0], title_suffix=' True Labels')
+
+#plot kmeans clustering results with voronoi regions
+colors_kmeans = colormap(y_kmeans.astype(float) / 3)
+axes[0, 1].scatter(X[:, 0], X[:, 1], c=colors_kmeans, s=50, alpha=0.5, ec='k')
+axes[0, 1].scatter(centroids[:, 0], centroids[:, 1], c='red', s=200, marker='x', label='Centroids')
+voronoi_plot_2d(vor, ax=axes[0, 1], show_vertices=False, line_colors='red', line_width=2, line_alpha=0.6, point_size=2)
+
+axes[0, 1].set_title('K-Means Clustering with Voronoi Regions')
+axes[0, 1].set_xlabel('Feature 1')
+axes[0, 1].set_ylabel('Feature 2')
+axes[0, 1].set_xlim(x_min, x_max)
+axes[0, 1].set_ylim(y_min, y_max)
+
+#call evaluate_clustering for kmeans labels
+evaluate_clustering(X, y_kmeans, n_clusters=3, ax=axes[1, 1], title_suffix=' K-Means Clustering')
+
+#adjust layout and show plot
+plt.tight_layout()
+plt.show()
