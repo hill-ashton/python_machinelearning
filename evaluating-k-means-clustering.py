@@ -129,3 +129,92 @@ plt.show()
 #print inertia values
 for i, inertia in enumerate(inertia_values, start=1):
     print(f'Run {i}: Inertia={inertia:.2f}')
+
+#do performance metrics change as the number of clusters increase? YES
+#range of k values to test
+k_values = range(2, 11)
+
+#store performance metrics
+inertia_values = []
+silhouette_scores = []
+davies_bouldin_indices = []
+
+for k in k_values:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    y_kmeans = kmeans.fit_predict(X)
+    
+    #calculate and store metrics
+    inertia_values.append(kmeans.inertia_)
+    silhouette_scores.append(silhouette_score(X, y_kmeans))
+    davies_bouldin_indices.append(davies_bouldin_score(X, y_kmeans))
+
+#plot the inertia values
+plt.figure(figsize=(18, 6))
+
+plt.subplot(1, 3, 1)
+plt.plot(k_values, inertia_values, marker='o')
+plt.title('Elbow Method: Inertia vs. k')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Inertia')
+
+#plot silhouette scores
+plt.subplot(1, 3, 2)
+plt.plot(k_values, silhouette_scores, marker='o')
+plt.title('Silhouette Score vs. k')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Silhouette Score')
+
+#plot Davies-Bouldin Index
+plt.subplot(1, 3, 3)
+plt.plot(k_values, davies_bouldin_indices, marker='o')
+plt.title('Davies-Bouldin Index vs. k')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Davies-Bouldin Index')
+
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(18, 12))
+colormap = cm.tab10  #define the colormap
+
+for i, k in enumerate([2, 3, 4]):
+    #fit kmeans and predict labels
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    y_kmeans = kmeans.fit_predict(X)
+
+    #create colors based on the predicted labels
+    colors = colormap(y_kmeans.astype(float) / k)
+
+    #scatter plot for each k in the first row (1, 2, 3)
+    ax1 = plt.subplot(2, 3, i + 1)
+    ax1.scatter(X[:, 0], X[:, 1], c=colors, s=50, alpha=0.6, edgecolor='k')
+    ax1.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], c='red', s=200, marker='X', label='Centroids')
+
+    #labeling the clusters
+    centers = kmeans.cluster_centers_
+    #draw white circles at cluster centers
+    plt.scatter(
+        centers[:, 0],
+        centers[:, 1],
+        marker="o",
+        c="white",
+        alpha=1,
+        s=200,
+        edgecolor="k",
+        label='Centroids'
+    )
+
+    for i_, c in enumerate(centers):
+        plt.scatter(c[0], c[1], marker="$%d$" % i_, alpha=1, s=50, edgecolor="k")
+
+    ax1.set_title(f'K-Means Clustering Results, k={k}')
+    ax1.set_xlabel('Feature 1')
+    ax1.set_ylabel('Feature 2')
+    ax1.legend()
+
+    #silhouette plot for each k in the second row (4, 5, 6)
+    ax2 = plt.subplot(2, 3, i + 4)
+    evaluate_clustering(X, y_kmeans, k, ax=ax2, title_suffix=f' k={k}')
+
+plt.tight_layout()  #adjust spacing between plots
+plt.show()
