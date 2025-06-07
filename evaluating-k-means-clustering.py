@@ -44,3 +44,88 @@ def evaluate_clustering(X, labels, n_clusters, ax=None, title_suffix=''):
 
     ax.set_yticks([])
 
+#create synthetic data with kmeans clustering
+X, y = make_blobs(n_samples=500, n_features=2, centers=4, cluster_std=[1.0, 3, 5, 2], random_state=42)
+
+#apply kmeans clustering
+n_clusters = 4
+kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+y_kmeans = kmeans.fit_predict(X)
+
+colormap = cm.tab10
+
+#plot the blobs
+plt.figure(figsize=(18, 6))
+plt.subplot(1, 3, 1)
+plt.scatter(X[:, 0], X[:, 1], s=50, alpha=0.6, edgecolor='k')
+centers = kmeans.cluster_centers_
+plt.scatter(centers[:, 0], centers[:, 1], c='red', s=200, marker='X', alpha=0.9, label='Centroids')
+plt.title(f'Synthetic Blobs with {n_clusters} Clusters')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend()
+
+#plot the clustering result
+#create colors based on the predicted labels
+colors = colormap(y_kmeans.astype(float) / n_clusters)
+
+plt.subplot(1, 3, 2)
+plt.scatter(X[:, 0], X[:, 1], c=colors, s=50, alpha=0.6, edgecolor='k')
+
+#label the clusters
+centers = kmeans.cluster_centers_
+#draw white circles at cluster centers
+plt.scatter(
+    centers[:, 0],
+    centers[:, 1],
+    marker="o",
+    c="white",
+    alpha=1,
+    s=200,
+    edgecolor="k",
+    label='Centroids'
+)
+#label the custer number
+for i, c in enumerate(centers):
+    plt.scatter(c[0], c[1], marker="$%d$" % i, alpha=1, s=50, edgecolor="k")
+
+plt.title(f'KMeans Clustering with {n_clusters} Clusters')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend()
+
+#evaluate the clustering
+plt.subplot(1, 3, 3)
+evaluate_clustering(X, y_kmeans, n_clusters, title_suffix=' k-Means Clustering')
+plt.show()
+
+#number of runs for k-means with different random states
+n_runs = 8
+inertia_values = []
+
+#calculate number of rows and columns needed for subplots
+n_cols = 2 #number of columns
+n_rows = -(-n_runs // n_cols) #cell division to determine rows
+plt.figure(figsize=(16, 16)) #adjust the figure size for better visualization
+
+#run kmeans multiple times with different random states
+for i in range(n_runs):
+    kmeans = KMeans(n_clusters=4, random_state=None)  # Use the default `n_init`
+    kmeans.fit(X)
+    inertia_values.append(kmeans.inertia_)
+
+    #plot the clustering result
+    plt.subplot(n_rows, n_cols, i + 1)
+    plt.scatter(X[:, 0], X[:, 1], c=kmeans.labels_, cmap='tab10', alpha=0.6, edgecolor='k')
+    plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], c='red', s=200, marker='x', label='Centroids')
+    plt.title(f'K-Means Run {i + 1}')
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.legend(loc='upper right', fontsize='small')
+
+plt.tight_layout()
+plt.show()
+
+#print inertia values
+for i, inertia in enumerate(inertia_values, start=1):
+    print(f'Run {i}: Inertia={inertia:.2f}')
