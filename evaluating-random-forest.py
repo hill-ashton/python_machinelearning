@@ -43,3 +43,52 @@ print(f"Mean Absolute Error (MAE): {mae:.4f}")
 print(f"Mean Squared Error (MSE): {mse:.4f}")
 print(f"Root Mean Squared Error (RMSE): {rmse:.4f}")
 print(f"R² Score: {r2:.4f}")
+
+#plot actual vs. predicted values
+plt.scatter(y_test, y_pred_test, alpha=0.5, color="blue")
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.title("Random Forest Regression - Actual vs Predicted")
+plt.show()
+
+#calculate residual errors
+residuals = 1e5*(y_test - y_pred_test)
+
+#plot histogram of residuals
+plt.hist(residuals, bins=30, color='lightblue', edgecolor='black')
+plt.title(f'Median House Value Prediction Residuals')
+plt.xlabel('Median House Value Prediction Error ($)')
+plt.ylabel('Frequency')
+print('Average error = ' + str(int(np.mean(residuals))))
+print('Standard deviation of error = ' + str(int(np.std(residuals))))
+
+#create DataFrame to make sorting easy
+residuals_df = pd.DataFrame({
+    'Actual': 1e5*y_test,
+    'Residuals': residuals
+})
+
+#sort DataFrame by actual target values
+residuals_df = residuals_df.sort_values(by='Actual')
+
+#plot residuals
+plt.scatter(residuals_df['Actual'], residuals_df['Residuals'], marker='o', alpha=0.4,ec='k')
+plt.title('Median House Value Prediciton Residuals Ordered by Actual Median Prices')
+plt.xlabel('Actual Values (Sorted)')
+plt.ylabel('Residuals')
+plt.grid(True)
+plt.show()
+
+#feature importances
+importances = rf_regressor.feature_importances_
+indices = np.argsort(importances)[::-1]
+features = data.feature_names
+
+#plot feature importances
+plt.bar(range(X.shape[1]), importances[indices],  align="center")
+plt.xticks(range(X.shape[1]), [features[i] for i in indices], rotation=45)
+plt.xlabel("Feature")
+plt.ylabel("Importance")
+plt.title("Feature Importances in Random Forest Regression")
+plt.show()
