@@ -29,3 +29,44 @@ test_score = pipeline.score(X_test, y_test)
 print(f"{test_score:.3f}")
 
 y_pred = pipeline.predict(X_test)
+
+#generate the confusion matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+#create a plot for the confusion matrix
+plt.figure()
+sns.heatmap(conf_matrix, annot=True, cmap='Blues', fmt='d',
+            xticklabels=labels, yticklabels=labels)
+
+#set the title and labels
+plt.title('Classification Pipeline Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+
+#show the plot
+plt.tight_layout()
+plt.show()
+
+# make a pipeline without specifying any parameters yet
+pipeline = Pipeline(
+                    [('scaler', StandardScaler()),
+                     ('pca', PCA()),
+                     ('knn', KNeighborsClassifier()) 
+                    ]
+                   )
+
+# Hyperparameter search grid for numbers of PCA components and KNN neighbors
+param_grid = {'pca__n_components': [2, 3],
+              'knn__n_neighbors': [3, 5, 7]
+             }
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+best_model = GridSearchCV(estimator=pipeline,
+                          param_grid=param_grid,
+                          cv=cv,
+                          scoring='accuracy',
+                          verbose=2
+                         )
+best_model.fit(X_train, y_train)
+test_score = best_model.score(X_test, y_test)
+print(f"{test_score:.3f}")
