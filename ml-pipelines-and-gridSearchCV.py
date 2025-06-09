@@ -47,7 +47,7 @@ plt.ylabel('Actual')
 plt.tight_layout()
 plt.show()
 
-# make a pipeline without specifying any parameters yet
+#make a pipeline without specifying any parameters yet
 pipeline = Pipeline(
                     [('scaler', StandardScaler()),
                      ('pca', PCA()),
@@ -55,7 +55,7 @@ pipeline = Pipeline(
                     ]
                    )
 
-# Hyperparameter search grid for numbers of PCA components and KNN neighbors
+#hyperparameter search grid for numbers of PCA components and KNN neighbors
 param_grid = {'pca__n_components': [2, 3],
               'knn__n_neighbors': [3, 5, 7]
              }
@@ -70,3 +70,23 @@ best_model = GridSearchCV(estimator=pipeline,
 best_model.fit(X_train, y_train)
 test_score = best_model.score(X_test, y_test)
 print(f"{test_score:.3f}")
+best_model.best_params_
+
+y_pred = best_model.predict(X_test)
+
+#generate the confusion matrix for KNN
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+#create a single plot for confusion matrix
+plt.figure()
+sns.heatmap(conf_matrix, annot=True, cmap='Blues', fmt='d',
+            xticklabels=labels, yticklabels=labels)
+
+#set title and labels
+plt.title('KNN Classification Testing Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+
+#show the plot
+plt.tight_layout()
+plt.show()
