@@ -125,3 +125,50 @@ plt.ylabel('Target (y)')
 plt.title('Comparison of Predictions with Outliers')
 plt.legend()
 plt.show()
+
+#fit a simple linear regression model
+lin_reg = LinearRegression()
+lin_reg.fit(X, y)
+y_pred_lin = lin_reg.predict(X)
+
+#fit a ridge regression model
+ridge_reg = Ridge(alpha=1)
+ridge_reg.fit(X, y)
+y_pred_ridge = ridge_reg.predict(X)
+
+#fit a lasso regression model
+lasso_reg = Lasso(alpha=0.2)
+lasso_reg.fit(X, y)
+y_pred_lasso = lasso_reg.predict(X)
+
+#print the regression results
+regression_results(y, y_pred_lin, 'Ordinary')
+regression_results(y, y_pred_ridge, 'Ridge')
+regression_results(y, y_pred_lasso, 'Lasso')
+
+
+#plot the data and the predictions
+plt.figure(figsize=(12, 8))
+
+#scatter plot of the original data
+plt.scatter(X, y, alpha=0.4,ec='k', label='Original Data')
+
+#plot the ideal regression line
+plt.plot(X, y_ideal,  linewidth=2, color='k',label='Ideal, noise free data')
+
+#plot predictions from the simple linear regression model
+plt.plot(X, y_pred_lin,  linewidth=5, label='Linear Regression')
+
+#plot predictions from the ridge regression model
+plt.plot(X, y_pred_ridge, linestyle='--',linewidth=2, label='Ridge Regression')
+
+#plot predictions from the lasso regression model
+plt.plot(X, y_pred_lasso,  linewidth=2, label='Lasso Regression')
+
+plt.xlabel('Feature (X)')
+plt.ylabel('Target (y)')
+#plt.ylim((0,20))
+plt.title('Comparison of predictions with no outliers')
+plt.legend()
+plt.show()
+
