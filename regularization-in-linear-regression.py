@@ -246,3 +246,44 @@ axes[1,2].legend()
  
 plt.tight_layout()
 plt.show()
+
+#model coefficients
+linear_coeff = linear.coef_
+ridge_coeff = ridge.coef_
+lasso_coeff = lasso.coef_
+
+
+#plot coefficients
+x_axis = np.arange(len(linear_coeff))
+x_labels = np.arange(min(x_axis),max(x_axis),10)
+plt.figure(figsize=(12, 6))
+
+plt.scatter(x_axis, ideal_coef,  label='Ideal', color='blue', ec='k', alpha=0.4)
+plt.bar(x_axis - 0.25, linear_coeff, width=0.25, label='Linear Regression', color='blue')
+plt.bar(x_axis, ridge_coeff, width=0.25, label='Ridge Regression', color='green')
+plt.bar(x_axis + 0.25, lasso_coeff, width=0.25, label='Lasso Regression', color='red')
+
+plt.xlabel('Feature Index')
+plt.ylabel('Coefficient Value')
+plt.title('Comparison of Model Coefficients')
+plt.xticks(x_labels)
+plt.legend()
+plt.show()
+
+
+#plot coefficient residuals
+x_axis = np.arange(len(linear_coeff))
+
+plt.figure(figsize=(12, 6))
+
+plt.bar(x_axis - 0.25, ideal_coef - linear_coeff, width=0.25, label='Linear Regression', color='blue')
+plt.bar(x_axis, ideal_coef - ridge_coeff, width=0.25, label='Ridge Regression', color='green')
+#plt.bar(x_axis + 0.25, ideal_coef - lasso_coeff, width=0.25, label='Lasso Regression', color='red')
+plt.plot(x_axis, ideal_coef - lasso_coeff, label='Lasso Regression', color='red')
+
+plt.xlabel('Feature Index')
+plt.ylabel('Coefficient Value')
+plt.title('Comparison of Model Coefficient Residuals')
+plt.xticks(x_labels)
+plt.legend()
+plt.show()
