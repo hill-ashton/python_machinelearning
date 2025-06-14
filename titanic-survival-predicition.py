@@ -45,3 +45,55 @@ categorical_transformer = Pipeline(steps=[
     ('onehot', OneHotEncoder(handle_unknown='ignore'))
 ])
 
+#combine transformers into a single column transformer
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', numerical_transformer, numerical_features),
+        ('cat', categorical_transformer, categorical_features)
+    ])
+
+#create model pipeline
+pipeline = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', RandomForestClassifier(random_state=42))
+])
+
+#define parameter grid
+param_grid = {
+    'classifier__n_estimators': [50, 100],
+    'classifier__max_depth': [None, 10, 20],
+    'classifier__min_samples_split': [2, 5]
+}
+#cross-validation method
+cv = StratifiedKFold(n_splits=5, shuffle=True)
+
+model = GridSearchCV(estimator=pipeline, param_grid=param_grid, cv=cv, scoring='accuracy', verbose=2)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+
+#generate confusion matrix 
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+plt.figure()
+sns.heatmap(conf_matrix, annot=True, cmap='Blues', fmt='d')
+
+#set title and labels
+plt.title('Titanic Classification Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+
+#show plot
+plt.tight_layout()
+plt.show()
+
+#feature importances
+model.best_estimator_['preprocessor'].named_transformers_['cat'].named_steps['onehot'].get_feature_names_out(categorical_features)
+feature_importances = model.best_estimator_['classifier'].feature_importances_
+
+#combine numerical and one-hot encoded categorical feature names
+feature_names = numerical_features + list(model.best_estimator_['preprocessor']
+                                        .named_transformers_['cat']
+                                        .named_steps['onehot']
+                                        .get_feature_names_out(categorical_features))
+
