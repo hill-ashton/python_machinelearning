@@ -1,7 +1,3 @@
-#This is an evaluating classification models lab, originally performed in an online IDE for a coursera program
-#For the purposes of archiving and documenting my work, I have rewritten all the code into a format which will work in this codespace
-#Most of this code does not function as intended in this environment
-
 #importing libraries
 import numpy as np
 import pandas as pd

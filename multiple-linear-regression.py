@@ -1,12 +1,7 @@
-#This is a multiple linear regression lab, originally performed in an online IDE for a coursera program
-#For the purposes of archiving, and documenting my work, I have rewritten all the code into a format which will work in this codespace
-#Most of this code does not function as intended in this environment
-
 #importing libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-#%matplotlib inline
 
 #loading dataset with pandas library
 url= "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-ML0101EN-SkillsNetwork/labs/Module%202/data/FuelConsumptionCo2.csv"

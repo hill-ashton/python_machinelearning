@@ -1,9 +1,7 @@
-#This is a lnear regression analysis lab done in an online web app IDE, 
-#For the purposes of archiving documentation, I have rewritten code used to complete tasks associated with the lab, as well as general usage of the methods introduced in the lab
+#import libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-#%matplotlib inline
 
 url= "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-ML0101EN-SkillsNetwork/labs/Module%202/data/FuelConsumptionCo2.csv"
 df=pd.read_csv(url)
