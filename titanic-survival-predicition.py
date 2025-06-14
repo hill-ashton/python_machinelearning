@@ -96,4 +96,88 @@ feature_names = numerical_features + list(model.best_estimator_['preprocessor']
                                         .named_transformers_['cat']
                                         .named_steps['onehot']
                                         .get_feature_names_out(categorical_features))
+importance_df = pd.DataFrame({'Feature': feature_names,
+                              'Importance': feature_importances
+                             }).sort_values(by='Importance', ascending=False)
 
+#plotting
+plt.figure(figsize=(10, 6))
+plt.barh(importance_df['Feature'], importance_df['Importance'], color='skyblue')
+plt.gca().invert_yaxis() 
+plt.title('Most Important Features in predicting whether a passenger survived')
+plt.xlabel('Importance Score')
+plt.show()
+
+#print test score 
+test_score = model.score(X_test, y_test)
+print(f"\nTest set accuracy: {test_score:.2%}")
+
+#replace RandomForestClassifier with LogisticRegression
+pipeline.set_params(classifier=LogisticRegression(random_state=42))
+
+#update the model's estimator to use the new pipeline
+model.estimator = pipeline
+
+#define new grid with Logistic Regression parameters
+param_grid = {
+    # 'classifier__n_estimators': [50, 100],
+    # 'classifier__max_depth': [None, 10, 20],
+    # 'classifier__min_samples_split': [2, 5],
+    'classifier__solver' : ['liblinear'],
+    'classifier__penalty': ['l1', 'l2'],
+    'classifier__class_weight' : [None, 'balanced']
+}
+
+model.param_grid = param_grid
+
+#fit updated pipeline with Logistic Regression
+model.fit(X_train, y_train)
+
+#make predictions
+y_pred = model.predict(X_test)
+
+print(classification_report(y_test, y_pred))
+
+#generate the confusion matrix 
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+plt.figure()
+sns.heatmap(conf_matrix, annot=True, cmap='Blues', fmt='d')
+
+#set title and labels
+plt.title('Titanic Classification Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+
+#show plot
+plt.tight_layout()
+plt.show()
+
+coefficients = model.best_estimator_.named_steps['classifier'].coef_[0]
+
+#combine numerical and categorical feature names
+numerical_feature_names = numerical_features
+categorical_feature_names = (model.best_estimator_.named_steps['preprocessor']
+                                     .named_transformers_['cat']
+                                     .named_steps['onehot']
+                                     .get_feature_names_out(categorical_features)
+                            )
+feature_names = numerical_feature_names + list(categorical_feature_names)
+
+#create a DataFrame for coefficients
+importance_df = pd.DataFrame({
+    'Feature': feature_names,
+    'Coefficient': coefficients
+}).sort_values(by='Coefficient', ascending=False, key=abs)  # Sort by absolute values
+
+#plotting
+plt.figure(figsize=(10, 6))
+plt.barh(importance_df['Feature'], importance_df['Coefficient'].abs(), color='skyblue')
+plt.gca().invert_yaxis()
+plt.title('Feature Coefficient magnitudes for Logistic Regression model')
+plt.xlabel('Coefficient Magnitude')
+plt.show()
+
+#print test score
+test_score = model.best_estimator_.score(X_test, y_test)
+print(f"\nTest set accuracy: {test_score:.2%}")
